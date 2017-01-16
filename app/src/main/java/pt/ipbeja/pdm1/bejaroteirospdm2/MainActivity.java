@@ -12,9 +12,6 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-
         if (findViewById(R.id.Fragment_conteiner) != null) {
 
 
@@ -23,7 +20,6 @@ public class MainActivity extends FragmentActivity {
             }
 
             FragmentHeadlines firstFragment = new FragmentHeadlines();
-
 
             firstFragment.setArguments(getIntent().getExtras());
 
