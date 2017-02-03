@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    tools:context="pt.ipbeja.pdm1.bejaroteirospdm2.MainActivity">
+    tools:context="pt.ipbeja.pdm1.bejaroteirospdm2.MainActivity"
+    android:background="@drawable/castelo3">
 
     <FrameLayout
         android:id="@+id/Fragment_conteiner"

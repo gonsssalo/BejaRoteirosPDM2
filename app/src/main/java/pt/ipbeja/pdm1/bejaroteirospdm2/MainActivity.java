@@ -1,34 +1,35 @@
 package pt.ipbeja.pdm1.bejaroteirospdm2;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity
         implements FragmentHeadlines.OnHeadlineSelectedListener {
 
+ public int posiçao;
+    Context ctx = this;
     public void onArticleSelected(int position) {
 
         if (findViewById(R.id.Fragment_conteiner) != null){
 
-            /*Toast.makeText(getActivity().getBaseContext(), "Clicked Portrait." + NewsData.Headlines[pos],
-                    Toast.LENGTH_SHORT).show();*/
-
-            // Create fragment and give it an argument specifying the article it should show
-            FragmentArticle newFragment = new FragmentArticle();
+           FragmentArticle newFragment = new FragmentArticle();
             Bundle args = new Bundle();
             args.putInt("position", position);
             newFragment.setArguments(args);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            // Replace whatever is in the fragment_container view with this fragment,
-            // and add the transaction to the back stack so the user can navigate back
+
             transaction.replace(R.id.Fragment_conteiner, newFragment);
             transaction.addToBackStack(null);
             // Commit the transaction
             transaction.commit();
-
+            posiçao = position;
         }
         else{
             /*Toast.makeText(getActivity().getBaseContext(), "Clicked Landscape." + NewsData.Headlines[pos],
@@ -46,35 +47,63 @@ public class MainActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*Toast.makeText(this, NewsData.Headlines[0], Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, NewsData.Articles[0], Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, NewsData.Headlines[1], Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, NewsData.Articles[1], Toast.LENGTH_SHORT).show();*/
+       action();
 
-        // Check that the activity is using the layout version with
-        // the fragment_container FrameLayout
+
         if (findViewById(R.id.Fragment_conteiner) != null) {
 
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
             if (savedInstanceState != null) {
                 return;
             }
 
-            // Create a new Fragment to be placed in the activity layout
             FragmentHeadlines firstFragment = new FragmentHeadlines();
 
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
             firstFragment.setArguments(getIntent().getExtras());
 
-            // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.Fragment_conteiner, firstFragment).commit();
         }
 
     }
 
+    public void action(){
+        DataBaseOperations db = new DataBaseOperations(this);
+        DataBaseOperations DB = new DataBaseOperations(ctx);
 
+       /* for(int i = 0; i < NewsData.locais.length -1; i++) {
+            DB.putInformation( NewsData.locais[i], NewsData.desciçao[i], NewsData.contacto[i], NewsData.link[i]);
+
+        }*/
+        NewsData.DBLocais = db.getAllLocations();
+        NewsData.DBDescricao = db.getAllDescricions();
+        NewsData.DBLink = db.getAllLinks();
+        NewsData.DBNumber = db.getAllNumbers();
+
+    }
+
+
+    public void btnMapa_onClick(View view) {
+
+
+
+        Intent SendIntent = new Intent(this, Mapalocais.class);
+
+        SendIntent.putExtra("linkWeb", NewsData.DBLink.get(posiçao));
+        startActivity(SendIntent);
+    }
+
+    public void btnLigar_onClick(View view) {
+
+        Uri number = Uri.parse("tel:" + NewsData.DBNumber.get(posiçao));
+        Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
+
+        if(NewsData.contacto[posiçao] != "") {
+
+                startActivity(callIntent);
+            }
+
+        else {
+            Toast.makeText(this,"Não é possivel fazer a chamada por falta de informação", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
